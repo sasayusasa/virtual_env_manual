@@ -33,35 +33,39 @@ Vagrantfile内のポート、IP、同期ファイルに関する記述を編集�
     vagrant plugin list (インストールの確認)
     vagrant up
     vagrant ssh
-### 4. 必要なパッケージ/PHP/comperのインストール
+### 4. 必要なパッケージ/PHP/Composerのインストール
 パッケージインストール  
-下記のコマンドはgit等の開発に必要なパッケージを一括でインストールしてくれる。
+下記のコマンドはGit等の開発に必要なパッケージを一括でインストールしてくれる。
 
     sudo yum -y groupinstall "development tools"
 PHPインストール  
 yumコマンドでのインストールは古いバージョンのPHPがインストールされてしまうので、  
 外部パッケージツールをダウンロードして、そこからPHPをインストールする。  
-(laravelを動作させるにはバージョン7以上が必要。)
+(Laravelを動作させるにはバージョン7以上が必要。)
 
     sudo yum -y install epel-release wget
     sudo wget http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
     sudo rpm -Uvh remi-release-7.rpm
     sudo yum -y install --enablerepo=remi-php72 php php-pdo php-mysqlnd php-mbstring php-xml php-fpm php-common php-devel php-mysql unzip
     php -v (バージョン確認)
-composerインストール  
-PHPのパッケージ管理ツールであるcomposerをインストール。
+Composerインストール  
+PHPのパッケージ管理ツールであるComposerをインストール。
 
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
     php composer-setup.php
     php -r "unlink('composer-setup.php');"
     sudo mv composer.phar /usr/local/bin/composer
     composer -v (バージョン確認)
-    exit (1度ゲストOSからログアウト)
-### 5. laravel_appのコピー作成
-今回使用するlaravel_appを作業ディレクトリにコピーする。
+### 5. Laravelのプロジェクト作成とログイン機能追加
+今回使用するLaravel6.0をインストールする。
 
-    cd Vagrant用作業ディレクトリ
-    cp -r laravel_appディレクトリまでの絶対パス ./
+    cd /vagrant
+    composer create-project --prefer-dist laravel/laravel プロジェクト名 "6.*"
+インストールしたLaravel6.0に認証機能を実装する。
+
+    cd /vagrant/Laravelプロジェクト名
+    composer require laravel/ui 1.*
+    php artisan ui vue --auth
 ### 6. Nginxインストール
 最新版インストールの準備のためファイルの作成と書き込み。
 
@@ -110,16 +114,17 @@ rpmに新たにリポジトリを追加し、インストールを行う。
     sudo cat /var/log/mysqld.log | grep 'temporary password' ← 左記の実行結果 root@localhost: ~この箇所~ をコピー。
     mysql -u root -p ← PWにコピーしたものを貼り付け。
     set password = "新たなpassword";
-    create database laravel_app;
-### 8. laravel_appディレクトリ下の.envファイル編集/マイグレーション実行
-laravel_appを動かせるようにするため、.envファイルを編集。
+    create database プロジェクトのDB名;
+### 8. Laravelプロジェクトディレクトリ下の.envファイル編集/マイグレーション実行
+Laravelを動かせるようにするため、.envファイルを編集。
 
+    DB_DATABASE=プロジェクトのDB名
     DB_PASSWORD=MySQLのPW
-laravel_appディレクトリ下にてマイグレーション実行。
+Laravelプロジェクトディレクトリ下にてマイグレーション実行。
 
     php artisan migrate
 
-### 9. laravel_appを動かすための準備
+### 9. Laravelを動かすための準備
 まずはNginxファイルの編集。
 
     sudo vi /etc/nginx/conf.d/default.conf
@@ -129,7 +134,7 @@ laravel_appディレクトリ下にてマイグレーション実行。
     server {
         listen       80;
         server_name  192.168.33.19; ← 変更
-        root /vagrant/laravel_app/public; ← 追記
+        root /vagrant/Laravelプロジェクト名/public; ← 追記
         index  index.html index.htm index.php; ← 追記
 
         #charset koi8-r;
@@ -158,15 +163,15 @@ laravel_appディレクトリ下にてマイグレーション実行。
     user = nginx
     group = nginx
 設定ファイルの編集を行ったので、nginxは再起動。  
-php-fpmは起動させ、laravel_appへ移動し、  
+php-fpmは起動させ、Laravelプロジェクトディレクトリへ移動し、  
 nginxのアクセス権限を変更する。
 
     sudo systemctl restart nginx
     sudo systemctl start php-fpm
-    cd /vagrant/laravel_app
+    cd /vagrant/Laravelプロジェクト名
     sudo chmod -R 777 storage
 上記まで完了したら http://192.168.33.19 へアクセス。  
-問題無くlaravel_appが動かせれば完了。
+問題無くLaravelが動かせれば完了。
 ## 〜環境構築の所感〜
 今回初めてゼロから環境構築を実施しましたが、所々でエラーが発生し、スムーズには進みませんでした。  
 しかし、その発生しているエラーは何が原因なのか、最初はさっぱりでしたが、エラー文を翻訳しながら、  
@@ -179,3 +184,5 @@ nginxのアクセス権限を変更する。
 ## 〜参考サイト〜
 - [Giztech -Server Lesson-](https://giztech.gizumo-inc.work/lesson/18)
 - [Qiita マークダウン記法 一覧表・チートシート](https://qiita.com/kamorits/items/6f342da395ad57468ae3)
+- [laravelをバージョン指定(laravel6)でインストールする方法](https://qiita.com/megukentarou/items/d62bf85822cd57c75bff)
+- [Laravel6 ログイン機能を実装する](https://qiita.com/ucan-lab/items/bd0d6f6449602072cb87)
