@@ -38,10 +38,10 @@ vagrant plugin install vagrant-vbguest
 ##### バージョン確認
 ```
 vagrant plugin list
-
+```
 上記コマンドで現在インストールされているプラグインの確認ができる。
 実行して表示された中に『vagrant-vbguest』があればインストールが成功している。
-```
+
 ##### 起動とログイン
 ```
 vagrant up
@@ -67,9 +67,9 @@ sudo yum -y install --enablerepo=epel,remi,remi-php73 php php-devel php-mbstring
 ##### PHPバージョン確認
 ```
 php -v
-
+```
 上記実行し、下記のような表示になればOK。
-
+```
 PHP 7.3.28 (cli) (built: Apr 27 2021 13:57:06) ( NTS )
 Copyright (c) 1997-2018 The PHP Group
 Zend Engine v3.3.28, Copyright (c) 1998-2018 Zend Technologies
@@ -85,8 +85,9 @@ sudo mv composer.phar /usr/local/bin/composer
 ##### Composerバージョン確認
 ```
 composer -v
-
+```
 上記実行し、下記のような表示になればOK。
+```
    ______
   / ____/___  ____ ___  ____  ____  ________  _____
  / /   / __ \/ __ `__ \/ __ \/ __ \/ ___/ _ \/ ___/
@@ -104,13 +105,13 @@ composer create-project --prefer-dist laravel/laravel プロジェクト名 "6.*
 ##### Laravelバージョン確認
 ```
 cd /vagrant/Laravelプロジェクト名
-
+```
 上記実行し、Laravelプロジェクトディレクトリへ移動。
-
+```
 php artisan -V
-
+```
 更に上記実行し、下記のような表示で、バージョンが6.0以上であればOK。
-
+```
 Laravel Framework 6.20.25
 ```
 #### インストールしたLaravel6.0に認証機能を実装する。
@@ -141,9 +142,9 @@ sudo yum install -y nginx
 ##### Nginxバージョン確認
 ```
 nginx -v
-
+```
 上記実行し、下記のような表示になればOK。
-
+```
 nginx version: nginx/1.19.10
 ```
 ##### 起動
@@ -163,9 +164,9 @@ sudo yum install -y mysql-community-server
 ##### MySQLバージョン確認
 ```
 mysql --version
-
+```
 上記実行し、下記のような表示になればOK。
-
+```
 mysql  Ver 14.14 Distrib 5.7.34, for Linux (x86_64) using  EditLine wrapper
 ```
 ##### 起動
